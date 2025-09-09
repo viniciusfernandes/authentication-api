@@ -1,0 +1,45 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:testdb
+    driver-class-name: org.h2.Driver
+    username: sa
+    password: 
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: true
+  h2:
+    console:
+      enabled: true
+  
+  threads:
+    virtual:
+      enabled: true
+
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: test-google-client-id
+            client-secret: test-google-client-secret
+            scope: email,profile
+          facebook:
+            client-id: test-facebook-client-id
+            client-secret: test-facebook-client-secret
+            scope: email,public_profile
+
+  mail:
+    host: localhost
+    port: 587
+    username: test@example.com
+    password: test-password
+
+jwt:
+  secret: test-secret-key-for-testing-purposes-only
+  expiration: 86400000
+
+app:
+  frontend-url: http://localhost:3000
+  email-verification-token-expiry: 86400000
+  password-reset-token-expiry: 3600000
