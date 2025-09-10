@@ -1,0 +1,60 @@
+databaseChangeLog:
+  - changeSet:
+      id: vinicius-20250910-01
+      author: vinicius
+      changes:
+        - sql:
+            sql: |
+              -- Create users table with inline indexes/constraints
+              CREATE TABLE IF NOT EXISTS users (
+                id BIGINT AUTO_INCREMENT PRIMARY KEY,
+                email VARCHAR(255) NOT NULL UNIQUE,
+                password VARCHAR(255) NULL,
+                full_name VARCHAR(255) NOT NULL,
+                phone VARCHAR(50) NULL,
+                profile_picture VARCHAR(512) NULL,
+                status VARCHAR(32) NOT NULL,
+                email_verified BOOLEAN NOT NULL DEFAULT FALSE,
+                email_verification_token VARCHAR(255) NULL,
+                email_verification_token_expiry DATETIME NULL,
+                password_reset_token VARCHAR(255) NULL,
+                password_reset_token_expiry DATETIME NULL,
+                external_provider_id VARCHAR(255) NULL,
+                external_provider VARCHAR(32) NULL,
+                created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                updated_at DATETIME NULL,
+                KEY idx_users_email (email)
+              );
+
+  - changeSet:
+      id: vinicius-20250910-02
+      author: vinicius
+      changes:
+        - sql:
+            sql: |
+              -- Create user_roles table with inline FK and index
+              CREATE TABLE IF NOT EXISTS user_roles (
+                user_id BIGINT NOT NULL,
+                role VARCHAR(32) NOT NULL,
+                KEY idx_user_roles_user (user_id),
+                CONSTRAINT fk_user_roles_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+              );
+
+  - changeSet:
+      id: vinicius-20250910-03
+      author: vinicius
+      changes:
+        - sql:
+            sql: |
+              -- Create tokens table with inline FK and composite index
+              CREATE TABLE IF NOT EXISTS tokens (
+                id BIGINT AUTO_INCREMENT PRIMARY KEY,
+                token VARCHAR(255) NOT NULL,
+                type VARCHAR(32) NOT NULL,
+                user_id BIGINT NOT NULL,
+                expires_at DATETIME NOT NULL,
+                used BOOLEAN NOT NULL DEFAULT FALSE,
+                created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                KEY idx_tokens_token_type (token, type),
+                CONSTRAINT fk_tokens_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+              );

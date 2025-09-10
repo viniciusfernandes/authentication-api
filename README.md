@@ -52,6 +52,33 @@ src/main/java/br/com/ovigia/
 - Java 21
 - Gradle
 - MySQL 8.0+
+- Docker 27.5.1
+- Docker Compose 2.29.2
+
+Verify versions:
+```bash
+docker --version       # Docker version 27.5.1, build ...
+docker compose version # Docker Compose version v2.29.2
+```
+
+Install on Ubuntu (official docs recommended):
+- Docker Engine: `https://docs.docker.com/engine/install/`
+- Docker Compose plugin: `https://docs.docker.com/compose/install/linux/`
+
+Example (Ubuntu apt):
+```bash
+sudo apt-get update
+# Docker Engine
+curl -fsSL https://get.docker.com | sh
+# Compose plugin
+sudo apt-get install -y docker-compose-plugin
+```
+
+Add your user to docker group (no sudo):
+```bash
+sudo usermod -aG docker $USER
+newgrp docker
+```
 
 ### Database Setup
 
@@ -124,7 +151,7 @@ spring:
 ```
 
 - An executor based on `Executors.newVirtualThreadPerTaskExecutor()` is provided in `SecurityConfig` as `applicationTaskExecutor`.
-- You can also set `JAVA_OPTS` to include `-Dspring.threads.virtual.enabled=true` (already done in Dockerfile).
+- You can also set `JAVA_OPTS` to include `-Dspring.threads.virtual.enabled=true`.
 
 ## API Endpoints
 
