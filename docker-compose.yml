@@ -1,4 +1,4 @@
-version: '3.9'
+version: '2.4'
 
 services:
   mysql:
@@ -36,8 +36,10 @@ services:
       FACEBOOK_CLIENT_ID: ""
       FACEBOOK_CLIENT_SECRET: ""
       FRONTEND_URL: http://localhost:3000
+      JAVA_TOOL_OPTIONS: "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:8000"
     ports:
       - "8080:8080"
+      - "8000:8000"
 
   authentication-app:
     image: node:20-alpine
