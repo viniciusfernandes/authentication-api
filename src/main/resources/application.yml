@@ -51,6 +51,25 @@ app:
   email-verification-token-expiry: 86400000 # 24 hours
   password-reset-token-expiry: 3600000 # 1 hour
 
+# Actuator configuration
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,env
+      base-path: /actuator
+  endpoint:
+    health:
+      show-details: when-authorized
+      show-components: always
+  health:
+    db:
+      enabled: true
+    diskspace:
+      enabled: true
+    mail:
+      enabled: true
+
 ---
 spring:
   config:
