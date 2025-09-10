@@ -1,8 +1,8 @@
-package br.com.ovigia.usecase.user.save.endpoint;
+package br.com.ovigia.usecase.user.create.endpoint;
 
-import br.com.ovigia.usecase.user.save.contract.RegisterUserRequest;
-import br.com.ovigia.usecase.user.save.contract.RegisterUserResponse;
-import br.com.ovigia.usecase.user.save.mapping.UserMapper;
+import br.com.ovigia.usecase.user.create.contract.RegisterUserRequest;
+import br.com.ovigia.usecase.user.create.contract.RegisterUserResponse;
+import br.com.ovigia.usecase.user.create.mapping.UserMapper;
 import br.com.ovigia.service.UserService;
 import br.com.ovigia.service.EmailService;
 import jakarta.validation.Valid;

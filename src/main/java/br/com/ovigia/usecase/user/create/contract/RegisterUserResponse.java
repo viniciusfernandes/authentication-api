@@ -1,4 +1,4 @@
-package br.com.ovigia.usecase.user.save.contract;
+package br.com.ovigia.usecase.user.create.contract;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

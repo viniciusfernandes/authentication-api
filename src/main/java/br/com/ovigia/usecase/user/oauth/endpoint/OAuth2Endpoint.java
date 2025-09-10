@@ -4,7 +4,7 @@ import br.com.ovigia.service.JwtService;
 import br.com.ovigia.service.UserService;
 import br.com.ovigia.usecase.user.login.contract.LoginResponse;
 import br.com.ovigia.usecase.user.login.mapping.LoginMapper;
-import br.com.ovigia.usecase.user.save.endpoint.SaveUserEndpoint.ApiResponse;
+import br.com.ovigia.usecase.user.create.endpoint.SaveUserEndpoint.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

@@ -1,8 +1,8 @@
-package br.com.ovigia.usecase.user.save.mapping;
+package br.com.ovigia.usecase.user.create.mapping;
 
 import br.com.ovigia.domain.model.User;
-import br.com.ovigia.usecase.user.save.contract.RegisterUserRequest;
-import br.com.ovigia.usecase.user.save.contract.RegisterUserResponse;
+import br.com.ovigia.usecase.user.create.contract.RegisterUserRequest;
+import br.com.ovigia.usecase.user.create.contract.RegisterUserResponse;
 import org.springframework.stereotype.Component;
 
 @Component

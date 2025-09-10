@@ -5,7 +5,7 @@ import br.com.ovigia.service.UserService;
 import br.com.ovigia.usecase.user.login.contract.LoginRequest;
 import br.com.ovigia.usecase.user.login.contract.LoginResponse;
 import br.com.ovigia.usecase.user.login.mapping.LoginMapper;
-import br.com.ovigia.usecase.user.save.endpoint.SaveUserEndpoint.ApiResponse;
+import br.com.ovigia.usecase.user.create.endpoint.SaveUserEndpoint.ApiResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

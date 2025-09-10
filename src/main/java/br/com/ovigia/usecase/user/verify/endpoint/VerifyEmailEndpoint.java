@@ -3,7 +3,7 @@ package br.com.ovigia.usecase.user.verify.endpoint;
 import br.com.ovigia.service.UserService;
 import br.com.ovigia.usecase.user.verify.contract.VerifyEmailRequest;
 import br.com.ovigia.usecase.user.verify.contract.VerifyEmailResponse;
-import br.com.ovigia.usecase.user.save.endpoint.SaveUserEndpoint.ApiResponse;
+import br.com.ovigia.usecase.user.create.endpoint.SaveUserEndpoint.ApiResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

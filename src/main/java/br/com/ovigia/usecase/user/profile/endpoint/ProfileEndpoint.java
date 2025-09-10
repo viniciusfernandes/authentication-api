@@ -4,7 +4,7 @@ import br.com.ovigia.service.UserService;
 import br.com.ovigia.usecase.user.profile.contract.ProfileResponse;
 import br.com.ovigia.usecase.user.profile.contract.UpdateProfileRequest;
 import br.com.ovigia.usecase.user.profile.mapping.ProfileMapper;
-import br.com.ovigia.usecase.user.save.endpoint.SaveUserEndpoint.ApiResponse;
+import br.com.ovigia.usecase.user.create.endpoint.SaveUserEndpoint.ApiResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
