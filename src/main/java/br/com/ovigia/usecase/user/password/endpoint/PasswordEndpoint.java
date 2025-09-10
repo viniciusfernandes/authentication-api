@@ -1,7 +1,7 @@
 package br.com.ovigia.usecase.user.password.endpoint;
 
-import br.com.ovigia.service.EmailService;
-import br.com.ovigia.service.UserService;
+import br.com.ovigia.service.IEmailService;
+import br.com.ovigia.service.IUserService;
 import br.com.ovigia.usecase.user.password.contract.ForgotPasswordRequest;
 import br.com.ovigia.usecase.user.password.contract.PasswordResponse;
 import br.com.ovigia.usecase.user.password.contract.ResetPasswordRequest;
@@ -17,8 +17,8 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class PasswordEndpoint {
     
-    private final UserService userService;
-    private final EmailService emailService;
+    private final IUserService userService;
+    private final IEmailService emailService;
     
     @PostMapping("/forgot-password")
     public ResponseEntity<ApiResponse<PasswordResponse>> forgotPassword(@Valid @RequestBody ForgotPasswordRequest request) {

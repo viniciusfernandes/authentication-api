@@ -49,6 +49,11 @@ existing one.
   - public User updateUser(...){} -> to update an entity user
   - public void deleteUser(...){} -> to user an entity user
 - Any repository component which connects to a database by JDBC driver must implements native query to speed up performance
+- Service Classes:
+  - Any service class must implement a service interface according to Clean Architecture and each interface must have a uppercase letter I, for example:
+  - ```{=java}
+    public interface IUserService{...}
+    ```
 - All Java classes must reside under the base package:
     `br.com.ovigia`
 - Follow **Domain-Driven Design (DDD)** principles:

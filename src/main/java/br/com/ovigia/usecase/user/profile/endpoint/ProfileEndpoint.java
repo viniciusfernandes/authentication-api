@@ -1,6 +1,6 @@
 package br.com.ovigia.usecase.user.profile.endpoint;
 
-import br.com.ovigia.service.UserService;
+import br.com.ovigia.service.IUserService;
 import br.com.ovigia.usecase.user.profile.contract.ProfileResponse;
 import br.com.ovigia.usecase.user.profile.contract.UpdateProfileRequest;
 import br.com.ovigia.usecase.user.profile.mapping.ProfileMapper;
@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class ProfileEndpoint {
     
-    private final UserService userService;
+    private final IUserService userService;
     private final ProfileMapper profileMapper;
     
     @GetMapping("/profile")

@@ -1,6 +1,6 @@
 package br.com.ovigia.usecase.user.verify.endpoint;
 
-import br.com.ovigia.service.UserService;
+import br.com.ovigia.service.IUserService;
 import br.com.ovigia.usecase.user.verify.contract.VerifyEmailRequest;
 import br.com.ovigia.usecase.user.verify.contract.VerifyEmailResponse;
 import br.com.ovigia.usecase.user.create.endpoint.SaveUserEndpoint.ApiResponse;
@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class VerifyEmailEndpoint {
     
-    private final UserService userService;
+    private final IUserService userService;
     
     @PostMapping("/verify-email")
     public ResponseEntity<ApiResponse<VerifyEmailResponse>> verifyEmail(@Valid @RequestBody VerifyEmailRequest request) {

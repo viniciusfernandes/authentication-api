@@ -1,7 +1,7 @@
 package br.com.ovigia.usecase.user.oauth.endpoint;
 
-import br.com.ovigia.service.JwtService;
-import br.com.ovigia.service.UserService;
+import br.com.ovigia.service.IJwtService;
+import br.com.ovigia.service.IUserService;
 import br.com.ovigia.usecase.user.login.contract.LoginResponse;
 import br.com.ovigia.usecase.user.login.mapping.LoginMapper;
 import br.com.ovigia.usecase.user.create.endpoint.SaveUserEndpoint.ApiResponse;
@@ -19,8 +19,8 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class OAuth2Endpoint {
     
-    private final UserService userService;
-    private final JwtService jwtService;
+    private final IUserService userService;
+    private final IJwtService jwtService;
     private final LoginMapper loginMapper;
     
     @GetMapping("/success")

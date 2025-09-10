@@ -14,7 +14,7 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 @Transactional
-public class TokenService {
+public class TokenService implements ITokenService {
     
     private final TokenRepository tokenRepository;
     

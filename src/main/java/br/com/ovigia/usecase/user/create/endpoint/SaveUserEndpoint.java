@@ -3,8 +3,8 @@ package br.com.ovigia.usecase.user.create.endpoint;
 import br.com.ovigia.usecase.user.create.contract.RegisterUserRequest;
 import br.com.ovigia.usecase.user.create.contract.RegisterUserResponse;
 import br.com.ovigia.usecase.user.create.mapping.UserMapper;
-import br.com.ovigia.service.UserService;
-import br.com.ovigia.service.EmailService;
+import br.com.ovigia.service.IUserService;
+import br.com.ovigia.service.IEmailService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -16,8 +16,8 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class SaveUserEndpoint {
     
-    private final UserService userService;
-    private final EmailService emailService;
+    private final IUserService userService;
+    private final IEmailService emailService;
     private final UserMapper userMapper;
     
     @PostMapping("/register")

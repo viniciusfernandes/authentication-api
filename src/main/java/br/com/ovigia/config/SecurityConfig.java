@@ -1,7 +1,7 @@
 package br.com.ovigia.config;
 
-import br.com.ovigia.service.JwtService;
-import br.com.ovigia.service.UserService;
+import br.com.ovigia.service.IJwtService;
+import br.com.ovigia.service.IUserService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -13,6 +13,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -36,14 +37,14 @@ import java.util.concurrent.Executor;
 @EnableMethodSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
-	private final JwtService jwtService;
-	private final UserService userService;
+	private final IJwtService jwtService;
+	private final IUserService userService;
 	private final PasswordEncoder passwordEncoder;
 	
 	@Bean
 	public AuthenticationProvider authenticationProvider() {
 		DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
-		authProvider.setUserDetailsService(userService);
+		authProvider.setUserDetailsService((UserDetailsService) userService);
 		authProvider.setPasswordEncoder(passwordEncoder);
 		return authProvider;
 	}
@@ -100,20 +101,33 @@ public class SecurityConfig {
 	
 	@RequiredArgsConstructor
 	public static class JwtAuthenticationFilter extends OncePerRequestFilter {
-		private final JwtService jwtService;
-		private final UserService userService;
+		private final IJwtService jwtService;
+		private final IUserService userService;
 		
-		@Override
-		protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
-									  FilterChain filterChain) throws ServletException, IOException {
-			final String authHeader = request.getHeader("Authorization");
-			final String jwt;
-			final String userEmail;
-			
-			if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-				filterChain.doFilter(request, response);
-				return;
-			}
+	@Override
+	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
+								  FilterChain filterChain) throws ServletException, IOException {
+		final String requestURI = request.getRequestURI();
+		
+		// Skip JWT processing for registration and other public endpoints
+		if (requestURI.equals("/api/auth/register") || 
+			requestURI.equals("/api/auth/verify-email") ||
+			requestURI.equals("/api/auth/forgot-password") ||
+			requestURI.equals("/api/auth/reset-password") ||
+			requestURI.startsWith("/oauth2/") ||
+			requestURI.startsWith("/login/oauth2/")) {
+			filterChain.doFilter(request, response);
+			return;
+		}
+		
+		final String authHeader = request.getHeader("Authorization");
+		final String jwt;
+		final String userEmail;
+		
+		if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+			filterChain.doFilter(request, response);
+			return;
+		}
 			
 			jwt = authHeader.substring(7);
 			userEmail = jwtService.extractUsername(jwt);
