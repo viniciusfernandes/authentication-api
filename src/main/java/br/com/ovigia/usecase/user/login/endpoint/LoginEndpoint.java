@@ -24,12 +24,12 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 @Slf4j
 public class LoginEndpoint {
-    
+
     private final AuthenticationManager authenticationManager;
     private final IJwtService jwtService;
     private final IUserService userService;
     private final LoginMapper loginMapper;
-    
+
     @PostMapping("/login")
     public ResponseEntity<ApiResponse<LoginResponse>> login(@Valid @RequestBody LoginRequest request) {
         try {
@@ -40,24 +40,18 @@ public class LoginEndpoint {
                             request.getPassword()
                     )
             );
-            
+
             // Get user details
             var user = (br.com.ovigia.domain.model.User) authentication.getPrincipal();
-            
+
             // Generate JWT token
             String token = jwtService.generateToken(user);
-            
+
             // Map to response
             var response = loginMapper.toResponse(user, token);
-            
+
             return ResponseEntity.ok(ApiResponse.success(response));
-            
-        } catch (BadCredentialsException e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body(ApiResponse.error("Invalid email or password"));
-        } catch (UsernameNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body(ApiResponse.error("Invalid email or password"));
+
         } catch (AuthenticationException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body(ApiResponse.error("Invalid email or password"));
