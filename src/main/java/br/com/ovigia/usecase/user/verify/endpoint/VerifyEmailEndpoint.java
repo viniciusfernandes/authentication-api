@@ -20,7 +20,7 @@ public class VerifyEmailEndpoint {
     @PostMapping("/verify-email")
     public ResponseEntity<ApiResponse<VerifyEmailResponse>> verifyEmail(@Valid @RequestBody VerifyEmailRequest request) {
         try {
-            userService.verifyEmail(request.getToken());
+            userService.verifyEmail(request.token);
             
             var response = VerifyEmailResponse.builder()
                     .message("Email verified successfully")

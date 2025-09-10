@@ -3,7 +3,6 @@ package br.com.ovigia.domain.model;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -16,7 +15,6 @@ import java.util.Set;
 
 @Entity
 @Table(name = "users")
-@Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -24,58 +22,58 @@ public class User implements UserDetails {
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    public Long id;
     
     @Column(nullable = false, unique = true)
-    private String email;
+    public String email;
     
     @Column(nullable = false)
-    private String password;
+    public String password;
     
     @Column(nullable = false)
-    private String fullName;
+    public String fullName;
     
-    private String phone;
+    public String phone;
     
-    private String profilePicture;
+    public String profilePicture;
     
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private UserStatus status;
+    public UserStatus status;
     
     @Column(name = "email_verified")
-    private boolean emailVerified;
+    public boolean emailVerified;
     
     @Column(name = "email_verification_token")
-    private String emailVerificationToken;
+    public String emailVerificationToken;
     
     @Column(name = "email_verification_token_expiry")
-    private LocalDateTime emailVerificationTokenExpiry;
+    public LocalDateTime emailVerificationTokenExpiry;
     
     @Column(name = "password_reset_token")
-    private String passwordResetToken;
+    public String passwordResetToken;
     
     @Column(name = "password_reset_token_expiry")
-    private LocalDateTime passwordResetTokenExpiry;
+    public LocalDateTime passwordResetTokenExpiry;
     
     @Column(name = "external_provider_id")
-    private String externalProviderId;
+    public String externalProviderId;
     
     @Enumerated(EnumType.STRING)
     @Column(name = "external_provider")
-    private ExternalProvider externalProvider;
+    public ExternalProvider externalProvider;
     
     @ElementCollection(fetch = FetchType.EAGER)
     @Enumerated(EnumType.STRING)
     @CollectionTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"))
     @Column(name = "role")
-    private Set<Role> roles;
+    public Set<Role> roles;
     
     @Column(name = "created_at", nullable = false, updatable = false)
-    private LocalDateTime createdAt;
+    public LocalDateTime createdAt;
     
     @Column(name = "updated_at")
-    private LocalDateTime updatedAt;
+    public LocalDateTime updatedAt;
     
     @PrePersist
     protected void onCreate() {
@@ -102,6 +100,11 @@ public class User implements UserDetails {
     @Override
     public String getUsername() {
         return email;
+    }
+    
+    @Override
+    public String getPassword() {
+        return password;
     }
     
     @Override

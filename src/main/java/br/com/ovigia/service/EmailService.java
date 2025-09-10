@@ -21,14 +21,14 @@ public class EmailService implements IEmailService {
     public void sendEmailVerification(User user) {
         try {
             SimpleMailMessage message = new SimpleMailMessage();
-            message.setTo(user.getEmail());
+            message.setTo(user.email);
             message.setSubject("Verify your email address");
             message.setText(buildEmailVerificationMessage(user));
             
             mailSender.send(message);
-            log.info("Email verification sent to: {}", user.getEmail());
+            log.info("Email verification sent to: {}", user.email);
         } catch (Exception e) {
-            log.error("Failed to send email verification to: {}", user.getEmail(), e);
+            log.error("Failed to send email verification to: {}", user.email, e);
             throw new RuntimeException("Failed to send verification email", e);
         }
     }
@@ -36,20 +36,20 @@ public class EmailService implements IEmailService {
     public void sendPasswordResetEmail(User user) {
         try {
             SimpleMailMessage message = new SimpleMailMessage();
-            message.setTo(user.getEmail());
+            message.setTo(user.email);
             message.setSubject("Reset your password");
             message.setText(buildPasswordResetMessage(user));
             
             mailSender.send(message);
-            log.info("Password reset email sent to: {}", user.getEmail());
+            log.info("Password reset email sent to: {}", user.email);
         } catch (Exception e) {
-            log.error("Failed to send password reset email to: {}", user.getEmail(), e);
+            log.error("Failed to send password reset email to: {}", user.email, e);
             throw new RuntimeException("Failed to send password reset email", e);
         }
     }
     
     private String buildEmailVerificationMessage(User user) {
-        String verificationUrl = frontendUrl + "/verify-email?token=" + user.getEmailVerificationToken();
+        String verificationUrl = frontendUrl + "/verify-email?token=" + user.emailVerificationToken;
         
         return String.format("""
                 Hello %s,
@@ -64,11 +64,11 @@ public class EmailService implements IEmailService {
                 
                 Best regards,
                 The Authentication Team
-                """, user.getFullName(), verificationUrl);
+                """, user.fullName, verificationUrl);
     }
     
     private String buildPasswordResetMessage(User user) {
-        String resetUrl = frontendUrl + "/reset-password?token=" + user.getPasswordResetToken();
+        String resetUrl = frontendUrl + "/reset-password?token=" + user.passwordResetToken;
         
         return String.format("""
                 Hello %s,
@@ -83,6 +83,6 @@ public class EmailService implements IEmailService {
                 
                 Best regards,
                 The Authentication Team
-                """, user.getFullName(), resetUrl);
+                """, user.fullName, resetUrl);
     }
 }

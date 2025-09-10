@@ -10,17 +10,17 @@ public class UserMapper {
     
     public User toDomain(RegisterUserRequest request) {
         return User.builder()
-                .email(request.getEmail())
-                .password(request.getPassword())
-                .fullName(request.getFullName())
+                .email(request.email)
+                .password(request.password)
+                .fullName(request.fullName)
                 .build();
     }
     
     public RegisterUserResponse toResponse(User user) {
         return RegisterUserResponse.builder()
-                .id(user.getId())
-                .email(user.getEmail())
-                .fullName(user.getFullName())
+                .id(user.id)
+                .email(user.email)
+                .fullName(user.fullName)
                 .message("User registered successfully. Please check your email for verification.")
                 .build();
     }

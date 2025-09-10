@@ -23,7 +23,7 @@ public class PasswordEndpoint {
     @PostMapping("/forgot-password")
     public ResponseEntity<ApiResponse<PasswordResponse>> forgotPassword(@Valid @RequestBody ForgotPasswordRequest request) {
         try {
-            userService.initiatePasswordReset(request.getEmail());
+            userService.initiatePasswordReset(request.email);
             
             var response = PasswordResponse.builder()
                     .message("Password reset email sent successfully")
@@ -44,7 +44,7 @@ public class PasswordEndpoint {
     @PostMapping("/reset-password")
     public ResponseEntity<ApiResponse<PasswordResponse>> resetPassword(@Valid @RequestBody ResetPasswordRequest request) {
         try {
-            userService.resetPassword(request.getToken(), request.getNewPassword());
+            userService.resetPassword(request.token, request.newPassword);
             
             var response = PasswordResponse.builder()
                     .message("Password reset successfully")

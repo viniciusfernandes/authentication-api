@@ -23,7 +23,7 @@ public class SaveUserEndpoint {
     @PostMapping("/register")
     public ResponseEntity<ApiResponse<RegisterUserResponse>> registerUser(@Valid @RequestBody RegisterUserRequest request) {
         // Validate password confirmation
-        if (!request.getPassword().equals(request.getConfirmPassword())) {
+        if (!request.password.equals(request.confirmPassword)) {
             return ResponseEntity.badRequest()
                     .body(ApiResponse.error("Passwords do not match"));
         }
@@ -31,9 +31,9 @@ public class SaveUserEndpoint {
         try {
             // Create user
             var user = userService.createUser(
-                    request.getEmail(),
-                    request.getPassword(),
-                    request.getFullName()
+                    request.email,
+                    request.password,
+                    request.fullName
             );
             
             // Send verification email

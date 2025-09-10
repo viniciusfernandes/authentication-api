@@ -110,7 +110,8 @@ public class UserService implements IUserService {
         String resetToken = UUID.randomUUID().toString();
         LocalDateTime tokenExpiry = LocalDateTime.now().plusHours(1);
         
-        user.setPasswordResetToken(resetToken, tokenExpiry);
+        user.passwordResetToken = resetToken;
+        user.passwordResetTokenExpiry = tokenExpiry;
         userRepository.save(user);
     }
     
@@ -122,25 +123,25 @@ public class UserService implements IUserService {
         }
         
         String hashedPassword = passwordEncoder.encode(newPassword);
-        user.setPassword(hashedPassword);
+        user.password = hashedPassword;
         user.clearPasswordResetToken();
         userRepository.save(user);
     }
     
     public User updateProfile(User user, String fullName, String phone, String profilePicture) {
-        user.setFullName(fullName);
-        user.setPhone(phone);
-        user.setProfilePicture(profilePicture);
+        user.fullName = fullName;
+        user.phone = phone;
+        user.profilePicture = profilePicture;
         return userRepository.save(user);
     }
     
     public void changePassword(User user, String currentPassword, String newPassword) {
-        if (!passwordEncoder.matches(currentPassword, user.getPassword())) {
+        if (!passwordEncoder.matches(currentPassword, user.password)) {
             throw new IllegalArgumentException("Current password is incorrect");
         }
         
         String hashedPassword = passwordEncoder.encode(newPassword);
-        user.setPassword(hashedPassword);
+        user.password = hashedPassword;
         userRepository.save(user);
     }
     
@@ -149,5 +150,10 @@ public class UserService implements IUserService {
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
         user.lock();
         userRepository.save(user);
+    }
+    
+    @Transactional(readOnly = true)
+    public long countUsers() {
+        return userRepository.count();
     }
 }

@@ -43,9 +43,9 @@ public class ProfileEndpoint {
             
             var updatedUser = userService.updateProfile(
                     user,
-                    request.getFullName(),
-                    request.getPhone(),
-                    request.getProfilePicture()
+                    request.fullName,
+                    request.phone,
+                    request.profilePicture
             );
             
             var response = profileMapper.toResponse(updatedUser);

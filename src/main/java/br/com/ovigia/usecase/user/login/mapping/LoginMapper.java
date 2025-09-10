@@ -10,10 +10,10 @@ public class LoginMapper {
     public LoginResponse toResponse(User user, String token) {
         return LoginResponse.builder()
                 .token(token)
-                .id(user.getId())
-                .email(user.getEmail())
-                .fullName(user.getFullName())
-                .roles(user.getRoles())
+                .id(user.id)
+                .email(user.email)
+                .fullName(user.fullName)
+                .roles(user.roles)
                 .build();
     }
 }

@@ -62,10 +62,10 @@ public class JwtService implements IJwtService {
     
     public String generateToken(User user) {
         Map<String, Object> claims = new HashMap<>();
-        claims.put("userId", user.getId());
-        claims.put("email", user.getEmail());
-        claims.put("roles", user.getRoles());
-        return createToken(claims, user.getEmail());
+        claims.put("userId", user.id);
+        claims.put("email", user.email);
+        claims.put("roles", user.roles);
+        return createToken(claims, user.email);
     }
     
     private String createToken(Map<String, Object> claims, String subject) {

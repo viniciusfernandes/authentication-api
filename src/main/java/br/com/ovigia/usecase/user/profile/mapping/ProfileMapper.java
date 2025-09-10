@@ -9,14 +9,14 @@ public class ProfileMapper {
     
     public ProfileResponse toResponse(User user) {
         return ProfileResponse.builder()
-                .id(user.getId())
-                .email(user.getEmail())
-                .fullName(user.getFullName())
-                .phone(user.getPhone())
-                .profilePicture(user.getProfilePicture())
-                .roles(user.getRoles())
-                .emailVerified(user.isEmailVerified())
-                .createdAt(user.getCreatedAt())
+                .id(user.id)
+                .email(user.email)
+                .fullName(user.fullName)
+                .phone(user.phone)
+                .profilePicture(user.profilePicture)
+                .roles(user.roles)
+                .emailVerified(user.emailVerified)
+                .createdAt(user.createdAt)
                 .build();
     }
 }

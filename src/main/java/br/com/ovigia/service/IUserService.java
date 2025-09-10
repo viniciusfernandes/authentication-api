@@ -31,4 +31,6 @@ public interface IUserService extends UserDetailsService {
     void changePassword(User user, String currentPassword, String newPassword);
     
     void lockUser(Long userId);
+    
+    long countUsers();
 }
