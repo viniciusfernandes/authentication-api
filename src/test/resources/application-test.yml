@@ -1,45 +1,79 @@
 spring:
+  application:
+    name: authentication-api-test
+  
   datasource:
-    url: jdbc:h2:mem:testdb
-    driver-class-name: org.h2.Driver
+    url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
     username: sa
     password: 
+    driver-class-name: org.h2.Driver
+  
   jpa:
     hibernate:
       ddl-auto: create-drop
-    show-sql: true
-  h2:
-    console:
-      enabled: true
+    show-sql: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.H2Dialect
+        format_sql: false
   
-  threads:
-    virtual:
-      enabled: true
-
-  security:
-    oauth2:
-      client:
-        registration:
-          google:
-            client-id: test-google-client-id
-            client-secret: test-google-client-secret
-            scope: email,profile
-          facebook:
-            client-id: test-facebook-client-id
-            client-secret: test-facebook-client-secret
-            scope: email,public_profile
-
+  liquibase:
+    enabled: false
+  
   mail:
     host: localhost
     port: 587
     username: test@example.com
-    password: test-password
+    password: testpassword
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
+  threads:
+    virtual:
+      enabled: true
+  
+  mvc:
+    throw-exception-if-no-handler-found: true
+  web:
+    resources:
+      add-mappings: false
 
 jwt:
-  secret: test-secret-key-for-testing-purposes-only
-  expiration: 86400000
+  secret: testSecretKeyForTestingPurposesOnly
+  expiration: 86400000 # 24 hours
 
 app:
   frontend-url: http://localhost:3000
-  email-verification-token-expiry: 86400000
-  password-reset-token-expiry: 3600000
+  email-verification-token-expiry: 86400000 # 24 hours
+  password-reset-token-expiry: 3600000 # 1 hour
+
+# Actuator configuration for tests
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,env
+      base-path: /actuator
+  endpoint:
+    health:
+      show-details: when-authorized
+      show-components: always
+  health:
+    db:
+      enabled: true
+    diskspace:
+      enabled: true
+    mail:
+      enabled: true
+
+logging:
+  level:
+    br.com.ovigia: DEBUG
+    org.springframework.security: WARN
+    org.springframework.web: WARN
+    org.hibernate.SQL: WARN
+    org.hibernate.type.descriptor.sql.BasicBinder: WARN

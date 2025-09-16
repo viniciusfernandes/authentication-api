@@ -9,19 +9,19 @@ import org.springframework.stereotype.Component;
 public class UserMapper {
     
     public User toDomain(RegisterUserRequest request) {
-        return User.builder()
-                .email(request.email)
-                .password(request.password)
-                .fullName(request.fullName)
-                .build();
+        User user = new User();
+        user.email = request.email;
+        user.password = request.password;
+        user.fullName = request.fullName;
+        return user;
     }
     
     public RegisterUserResponse toResponse(User user) {
-        return RegisterUserResponse.builder()
-                .id(user.id)
-                .email(user.email)
-                .fullName(user.fullName)
-                .message("User registered successfully. Please check your email for verification.")
-                .build();
+        RegisterUserResponse response = new RegisterUserResponse();
+        response.id = user.id;
+        response.email = user.email;
+        response.fullName = user.fullName;
+        response.message = "User registered successfully. Please check your email for verification.";
+        return response;
     }
 }

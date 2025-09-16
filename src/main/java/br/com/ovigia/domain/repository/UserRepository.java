@@ -1,5 +1,6 @@
 package br.com.ovigia.domain.repository;
 
+import br.com.ovigia.domain.model.ExternalProvider;
 import br.com.ovigia.domain.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
@@ -14,9 +15,9 @@ public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> findByEmailVerificationToken(String token);
     
     Optional<User> findByPasswordResetToken(String token);
-    
-    Optional<User> findByExternalProviderIdAndExternalProvider(String externalProviderId, 
-                                                              br.com.ovigia.domain.model.ExternalProvider externalProvider);
-    
+
+    Optional<User> findByExternalProviderIdAndExternalProvider(String externalProviderId,
+                                                               ExternalProvider externalProvider);
+
     boolean existsByEmail(String email);
 }

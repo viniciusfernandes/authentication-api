@@ -20,6 +20,7 @@ public class UserService implements IUserService {
     
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final IEmailService emailService;
     
     @Override
     @Transactional(readOnly = true)
@@ -48,12 +49,19 @@ public class UserService implements IUserService {
                 .roles(java.util.Set.of(br.com.ovigia.domain.model.Role.USER))
                 .build();
         
-        return userRepository.save(user);
+        // Send email verification before saving to ensure rollback works
+        emailService.sendEmailVerification(user);
+        User savedUser = userRepository.save(user);
+        return savedUser;
     }
     
     public User createUserFromExternalProvider(String email, String fullName, 
                                              String externalProviderId, 
                                              br.com.ovigia.domain.model.ExternalProvider externalProvider) {
+        if (userRepository.findByExternalProviderIdAndExternalProvider(externalProviderId, externalProvider).isPresent()) {
+            throw new IllegalArgumentException("User with external provider " + externalProvider + " and ID " + externalProviderId + " already exists");
+        }
+        
         User user = User.builder()
                 .email(email)
                 .password(null) // No password for external provider users
@@ -113,6 +121,7 @@ public class UserService implements IUserService {
         user.passwordResetToken = resetToken;
         user.passwordResetTokenExpiry = tokenExpiry;
         userRepository.save(user);
+        emailService.sendPasswordResetEmail(user);
     }
     
     public void resetPassword(String token, String newPassword) {

@@ -36,9 +36,6 @@ public class SaveUserEndpoint {
                     request.fullName
             );
             
-            // Send verification email
-            emailService.sendEmailVerification(user);
-            
             // Map to response
             var response = userMapper.toResponse(user);
             
@@ -46,11 +43,11 @@ public class SaveUserEndpoint {
                     .body(ApiResponse.success(response));
                     
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest()
+            return ResponseEntity.status(HttpStatus.CONFLICT)
                     .body(ApiResponse.error(e.getMessage()));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(ApiResponse.error("An error occurred during registration"));
+                    .body(ApiResponse.error(e.getMessage()));
         }
     }
     
