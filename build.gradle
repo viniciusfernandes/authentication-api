@@ -5,6 +5,16 @@ plugins {
     id "org.owasp.dependencycheck" version "8.4.0"
 }
 
+dependencyCheck {
+    nvd {
+        apiKey = System.getenv("NVD_API_KEY")
+        delay = 2000 // avoid rate limiting
+    }
+    autoUpdate = true // default
+    cpeStartsWith = "cpe"
+    failBuildOnCVSS = 7   // optional: fail only if high risk
+}
+
 group = 'br.com.ovigia'
 version = '0.0.1-SNAPSHOT'
 
