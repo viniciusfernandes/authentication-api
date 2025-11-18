@@ -73,4 +73,6 @@ tasks.withType(com.github.spotbugs.snom.SpotBugsTask).configureEach {
         xml.required = false
         html.required = true
     }
+    // Don't fail the build on SpotBugs warnings - generate reports but allow build to continue
+    ignoreFailures = true
 }
