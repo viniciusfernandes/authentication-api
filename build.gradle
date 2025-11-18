@@ -2,13 +2,13 @@ plugins {
     id 'java'
     id 'org.springframework.boot' version '3.2.0'
     id 'io.spring.dependency-management' version '1.1.4'
-    id "org.owasp.dependencycheck" version "8.4.0"
+    // static code analysis
+    id "com.github.spotbugs" version "6.0.12"
 }
 
-dependencyCheck {
-    failBuildOnCVSS = 7
-    autoUpdate = true
-}
+// Note: Dependency scanning is now handled by Trivy in the CI/CD pipeline
+// OWASP Dependency-Check plugin removed to avoid NVD API 403 errors
+
 
 group = 'br.com.ovigia'
 version = '0.0.1-SNAPSHOT'
@@ -66,4 +66,11 @@ dependencies {
 
 tasks.named('test') {
     useJUnitPlatform()
+}
+
+tasks.withType(com.github.spotbugs.snom.SpotBugsTask).configureEach {
+    reports {
+        xml.required = false
+        html.required = true
+    }
 }
