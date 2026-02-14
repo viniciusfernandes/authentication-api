@@ -1,13 +1,15 @@
+server:
+  port: 8081
+
 spring:
   application:
     name: authentication-api
-  
   datasource:
-    url: jdbc:mysql://localhost:3306/auth_db?createDatabaseIfNotExist=true&useSSL=false&serverTimezone=UTC
-    username: root
-    password: password
+    url: jdbc:mysql://localhost:3306/car_reselling?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true
+    username: car
+    password: car
     driver-class-name: com.mysql.cj.jdbc.Driver
-  
+
   jpa:
     hibernate:
       ddl-auto: none
@@ -16,10 +18,10 @@ spring:
       hibernate:
         dialect: org.hibernate.dialect.MySQL8Dialect
         format_sql: true
-  
+
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
-  
+
   mail:
     host: smtp.gmail.com
     port: 587
@@ -35,29 +37,30 @@ spring:
   threads:
     virtual:
       enabled: true
-  
+
   mvc:
     throw-exception-if-no-handler-found: true
+
   web:
     resources:
       add-mappings: false
 
 jwt:
-  secret: ${JWT_SECRET:mySecretKey}
+  secret: ${JWT_SECRET:myVeryLongSecretKeyForJwtSigningChangeMe123!}
   expiration: 86400000 # 24 hours
 
 app:
   frontend-url: ${FRONTEND_URL:http://localhost:3000}
   email-verification-token-expiry: 86400000 # 24 hours
   password-reset-token-expiry: 3600000 # 1 hour
+  email-verification-enabled: false
 
-# Actuator configuration
 management:
   endpoints:
     web:
+      base-path: /actuator
       exposure:
         include: health,info,metrics,env
-      base-path: /actuator
   endpoint:
     health:
       show-details: when-authorized
@@ -103,5 +106,5 @@ spring:
 
 logging:
   level:
-    br.com.ovigia: DEBUG
+    br.com.authentication: DEBUG
     org.springframework.security: DEBUG
