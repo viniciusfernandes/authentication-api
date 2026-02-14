@@ -72,7 +72,7 @@ management:
 
 logging:
   level:
-    br.com.ovigia: DEBUG
+    br.com.authentication: DEBUG
     org.springframework.security: WARN
     org.springframework.web: WARN
     org.hibernate.SQL: WARN

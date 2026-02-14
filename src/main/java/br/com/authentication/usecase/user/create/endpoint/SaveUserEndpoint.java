@@ -1,0 +1,79 @@
+package br.com.authentication.usecase.user.create.endpoint;
+
+import br.com.authentication.usecase.user.create.contract.RegisterUserRequest;
+import br.com.authentication.usecase.user.create.contract.RegisterUserResponse;
+import br.com.authentication.usecase.user.create.mapping.UserMapper;
+import br.com.authentication.service.IUserService;
+import br.com.authentication.service.IEmailService;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+@RestController
+@RequestMapping("/api/auth")
+@RequiredArgsConstructor
+public class SaveUserEndpoint {
+    
+    private final IUserService userService;
+    private final IEmailService emailService;
+    private final UserMapper userMapper;
+    
+    @PostMapping("/register")
+    public ResponseEntity<ApiResponse<RegisterUserResponse>> registerUser(@Valid @RequestBody RegisterUserRequest request) {
+        // Validate password confirmation
+        if (!request.password.equals(request.confirmPassword)) {
+            return ResponseEntity.badRequest()
+                    .body(ApiResponse.error("Passwords do not match"));
+        }
+        
+        try {
+            // Create user
+            var user = userService.createUser(
+                    request.email,
+                    request.password,
+                    request.fullName
+            );
+            
+            // Map to response
+            var response = userMapper.toResponse(user);
+            
+            return ResponseEntity.status(HttpStatus.CREATED)
+                    .body(ApiResponse.success(response));
+                    
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                    .body(ApiResponse.error(e.getMessage()));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(ApiResponse.error(e.getMessage()));
+        }
+    }
+    
+    // Inner class for API response structure
+    public static class ApiResponse<T> {
+        private T data;
+        private String error;
+        private boolean success;
+        
+        private ApiResponse(T data, String error, boolean success) {
+            this.data = data;
+            this.error = error;
+            this.success = success;
+        }
+        
+        public static <T> ApiResponse<T> success(T data) {
+            return new ApiResponse<>(data, null, true);
+        }
+        
+        public static <T> ApiResponse<T> error(String error) {
+            return new ApiResponse<>(null, error, false);
+        }
+        
+        // Getters
+        public T getData() { return data; }
+        public String getError() { return error; }
+        public boolean isSuccess() { return success; }
+    }
+}

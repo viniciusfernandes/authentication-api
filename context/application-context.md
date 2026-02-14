@@ -55,7 +55,7 @@ existing one.
     public interface IUserService{...}
     ```
 - All Java classes must reside under the base package:
-    `br.com.ovigia`
+    `br.com.authentication`
 - Follow **Domain-Driven Design (DDD)** principles:
     - No anemic models
     - Use repositories, root entities, and aggregates appropriately
@@ -72,14 +72,14 @@ existing one.
 ```{=html}
 <!-- -->
 ```
-    br/com/ovigia/usecase/user/save/
+    br/com/authentication/usecase/user/save/
         endpoint   -> all endpoints here
         contract   -> request and response DTO classes
         mapping    -> mapping utilities (request → domain, domain → response)
 
 - Endpoint naming convention:
     - Example: `SaveUserEndpoint` →
-        `br/com/ovigia/usecase/user/save/endpoint`
+        `br/com/authentication/usecase/user/save/endpoint`
 - HTTP responses must follow the structure:
 
 ``` json

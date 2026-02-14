@@ -27,7 +27,7 @@ A modern authentication and authorization web application built with Spring Boot
 Following Clean Architecture and DDD principles:
 
 ```
-src/main/java/br/com/ovigia/
+src/main/java/br/com/authentication/
 ├── domain/
 │   ├── model/          # Domain entities (User, Role, Token, etc.)
 │   └── repository/     # Repository interfaces
@@ -177,6 +177,13 @@ spring:
 
 - Google: `http://localhost:8080/oauth2/authorization/google`
 - Facebook: `http://localhost:8080/oauth2/authorization/facebook`
+
+## API Documentation (Swagger)
+
+Swagger UI and OpenAPI specs are available once the application is running:
+
+- Swagger UI: `http://localhost:8080/swagger-ui/index.html`
+- OpenAPI JSON: `http://localhost:8080/v3/api-docs`
 
 ## API Response Format
 

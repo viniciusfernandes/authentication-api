@@ -9,7 +9,7 @@ This document describes the comprehensive test coverage implemented for **Featur
 The test suite follows Clean Architecture principles and is organized into distinct layers:
 
 ```
-src/test/java/br/com/ovigia/
+src/test/java/br/com/authentication/
 ├── domain/
 │   ├── model/           # Domain entity tests
 │   └── repository/      # Data access layer tests
@@ -222,21 +222,21 @@ User googleUser = TestDataFactory.createUserWithExternalProvider(
 
 ### Individual Test Classes
 ```bash
-./gradlew test --tests "br.com.ovigia.domain.model.UserTest"
-./gradlew test --tests "br.com.ovigia.service.UserServiceTest"
-./gradlew test --tests "br.com.ovigia.integration.UserRegistrationIntegrationTest"
+./gradlew test --tests "br.com.authentication.domain.model.UserTest"
+./gradlew test --tests "br.com.authentication.service.UserServiceTest"
+./gradlew test --tests "br.com.authentication.integration.UserRegistrationIntegrationTest"
 ```
 
 ### Test Categories
 ```bash
 # Unit tests only
-./gradlew test --tests "br.com.ovigia.domain.*" --tests "br.com.ovigia.service.*"
+./gradlew test --tests "br.com.authentication.domain.*" --tests "br.com.authentication.service.*"
 
 # Integration tests only
-./gradlew test --tests "br.com.ovigia.integration.*"
+./gradlew test --tests "br.com.authentication.integration.*"
 
 # Contract tests only
-./gradlew test --tests "br.com.ovigia.usecase.*.contract.*"
+./gradlew test --tests "br.com.authentication.usecase.*.contract.*"
 ```
 
 ### Full Test Suite
@@ -246,7 +246,7 @@ User googleUser = TestDataFactory.createUserWithExternalProvider(
 
 ### Test Suite Runner
 ```bash
-./gradlew test --tests "br.com.ovigia.UserRegistrationTestSuite"
+./gradlew test --tests "br.com.authentication.UserRegistrationTestSuite"
 ```
 
 ## Test Coverage Metrics
