@@ -26,7 +26,7 @@ WORKDIR /app
 
 ENV JAVA_OPTS="-XX:+UseZGC -Dspring.threads.virtual.enabled=true"
 
-COPY --from=builder /app/build/libs/*.jar app.jar
+COPY --from=builder /app/build/libs/*-SNAPHOT.jar app.jar
 
 EXPOSE 8081
 
