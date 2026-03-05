@@ -1,5 +1,5 @@
 server:
-  port: 8081
+  port: 8080
 
 spring:
   application:
@@ -55,12 +55,15 @@ app:
   password-reset-token-expiry: 3600000 # 1 hour
   email-verification-enabled: false
 
+email-service:
+  enable: false
+
 management:
   endpoints:
     web:
       base-path: /actuator
       exposure:
-        include: health,info,metrics,env
+        include: health,info
   endpoint:
     health:
       show-details: when-authorized
@@ -71,7 +74,7 @@ management:
     diskspace:
       enabled: true
     mail:
-      enabled: true
+      enabled: false
 
 ---
 spring:
@@ -79,9 +82,9 @@ spring:
     activate:
       on-profile: docker
   datasource:
-    url: jdbc:mysql://mysql:3306/car_reselling?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true
-    username: car
-    password: car
+    url: ${SPRING_DATASOURCE_URL:jdbc:mysql://localhost:3306/car_reselling?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC}
+    username: ${SPRING_DATASOURCE_USERNAME:}
+    password: ${SPRING_DATASOURCE_PASSWORD:}
   jpa:
     hibernate:
       ddl-auto: none
@@ -106,5 +109,4 @@ spring:
 
 logging:
   level:
-    br.com.authentication: INFO
-    org.springframework.security: DEBUG
+    root: INFO
