@@ -11,7 +11,7 @@ plugins {
 
 
 group = 'br.com.authentication'
-version = '0.0.1-SNAPSHOT'
+version = '1.0'
 
 java {
     sourceCompatibility = '21'
@@ -78,4 +78,39 @@ tasks.withType(com.github.spotbugs.snom.SpotBugsTask).configureEach {
     }
     // Don't fail the build on SpotBugs warnings - generate reports but allow build to continue
     ignoreFailures = true
+}
+
+/**
+ * Spring Boot executable jar customization
+ * Output: build/libs/car-reselling-api-1.0.jar
+ */
+tasks.named('bootJar') {
+    archiveBaseName.set('authentication-api')
+    archiveVersion.set(project.version.toString())
+    archiveClassifier.set('') // no "-plain" or "-all" suffix
+
+    // Optional: if you have multiple main classes, uncomment and set explicitly:
+    // mainClass.set('br.com.authentication.AuthenticationApplication')
+
+    manifest {
+        attributes(
+                'Implementation-Title': 'Authentication API',
+                'Implementation-Version': project.version,
+                'Implementation-Vendor': project.group
+        )
+    }
+
+    // Optional: include extra files inside the jar under META-INF/
+    // from('LICENSE') { into('META-INF') }
+}
+
+/**
+ * Disable the plain jar (non-boot) by default to avoid generating two artifacts.
+ * If you WANT the plain jar too, change enabled = true.
+ */
+tasks.named('jar') {
+    enabled = false
+    archiveBaseName.set('authentication-api')
+    archiveVersion.set(project.version.toString())
+    archiveClassifier.set('plain')
 }
