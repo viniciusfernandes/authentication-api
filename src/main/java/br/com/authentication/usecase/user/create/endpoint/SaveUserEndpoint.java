@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.*;
 public class SaveUserEndpoint {
     
     private final IUserService userService;
-    private final IEmailService emailService;
     private final UserMapper userMapper;
     
     @PostMapping("/register")

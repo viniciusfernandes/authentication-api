@@ -18,8 +18,7 @@ import org.springframework.web.bind.annotation.*;
 public class PasswordEndpoint {
     
     private final IUserService userService;
-    private final IEmailService emailService;
-    
+
     @PostMapping("/forgot-password")
     public ResponseEntity<ApiResponse<PasswordResponse>> forgotPassword(@Valid @RequestBody ForgotPasswordRequest request) {
         try {
