@@ -7,11 +7,14 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.actuate.autoconfigure.security.servlet.EndpointRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -31,6 +34,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.Executor;
 
 @Configuration
@@ -41,6 +45,21 @@ public class SecurityConfig {
 	private final IJwtService jwtService;
 	private final IUserService userService;
 	private final PasswordEncoder passwordEncoder;
+	@Value("${app.cors.allowed-origin-patterns:}")
+	private String allowedOriginPatternsConfig;
+
+	@Bean
+	SecurityFilterChain actuatorSecurity(HttpSecurity http) throws Exception {
+		http
+				.securityMatcher(EndpointRequest.toAnyEndpoint())
+				.authorizeHttpRequests(auth -> auth
+						.requestMatchers(EndpointRequest.to("health", "info")).permitAll()
+						.anyRequest().hasRole("DEVOPS")
+				)
+				.httpBasic(Customizer.withDefaults());
+
+		return http.build();
+	}
 	
 	@Bean
 	public AuthenticationProvider authenticationProvider() {
@@ -59,17 +78,21 @@ public class SecurityConfig {
 	public JwtAuthenticationFilter jwtAuthenticationFilter() {
 		return new JwtAuthenticationFilter(jwtService, userService);
 	}
-	
+
 	@Bean
 	public CorsConfigurationSource corsConfigurationSource() {
-		CorsConfiguration configuration = new CorsConfiguration();
-		configuration.setAllowedOriginPatterns(Arrays.asList("*"));
-		configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-		configuration.setAllowedHeaders(Arrays.asList("*"));
-		configuration.setAllowCredentials(true);
-		
+		CorsConfiguration config = new CorsConfiguration();
+		List<String> patterns = allowedOriginPatternsConfig == null || allowedOriginPatternsConfig.isBlank()
+				? List.of("*")
+				: Arrays.stream(allowedOriginPatternsConfig.split(",")).map(String::trim).filter(s -> !s.isEmpty()).toList();
+		config.setAllowedOriginPatterns(patterns.isEmpty() ? List.of("*") : patterns);
+		config.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
+		config.setAllowedHeaders(List.of("*"));
+		config.setAllowCredentials(true);
+		config.setMaxAge(3600L);
+
 		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-		source.registerCorsConfiguration("/**", configuration);
+		source.registerCorsConfiguration("/**", config);
 		return source;
 	}
 	
