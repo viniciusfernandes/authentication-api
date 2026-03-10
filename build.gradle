@@ -11,7 +11,7 @@ plugins {
 
 
 group = 'br.com.authentication'
-version = '1.3'
+version = '1.4'
 
 java {
     sourceCompatibility = '21'

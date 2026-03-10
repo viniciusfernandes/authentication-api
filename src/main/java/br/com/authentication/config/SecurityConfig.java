@@ -42,139 +42,141 @@ import java.util.concurrent.Executor;
 @EnableMethodSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
-	private final IJwtService jwtService;
-	private final IUserService userService;
-	private final PasswordEncoder passwordEncoder;
-	@Value("${app.cors.allowed-origin-patterns:}")
-	private String allowedOriginPatternsConfig;
+    private final IJwtService jwtService;
+    private final IUserService userService;
+    private final PasswordEncoder passwordEncoder;
+    @Value("${app.cors.allowed-origin-patterns:}")
+    private String allowedOriginPatternsConfig;
 
-	@Bean
-	SecurityFilterChain actuatorSecurity(HttpSecurity http) throws Exception {
-		http
-				.securityMatcher(EndpointRequest.toAnyEndpoint())
-				.authorizeHttpRequests(auth -> auth
-						.requestMatchers(EndpointRequest.to("health", "info")).permitAll()
-						.anyRequest().hasRole("DEVOPS")
-				)
-				.httpBasic(Customizer.withDefaults());
+    @Bean
+    SecurityFilterChain actuatorSecurity(HttpSecurity http) throws Exception {
+        http
+                .securityMatcher(EndpointRequest.toAnyEndpoint())
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(EndpointRequest.to("health", "info")).permitAll()
+                        .anyRequest().hasRole("DEVOPS")
+                )
+                .httpBasic(Customizer.withDefaults());
 
-		return http.build();
-	}
-	
-	@Bean
-	public AuthenticationProvider authenticationProvider() {
-		DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
-		authProvider.setUserDetailsService((UserDetailsService) userService);
-		authProvider.setPasswordEncoder(passwordEncoder);
-		return authProvider;
-	}
-	
-	@Bean
-	public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
-		return config.getAuthenticationManager();
-	}
-	
-	@Bean
-	public JwtAuthenticationFilter jwtAuthenticationFilter() {
-		return new JwtAuthenticationFilter(jwtService, userService);
-	}
+        return http.build();
+    }
 
-	@Bean
-	public CorsConfigurationSource corsConfigurationSource() {
-		CorsConfiguration config = new CorsConfiguration();
-		List<String> patterns = allowedOriginPatternsConfig == null || allowedOriginPatternsConfig.isBlank()
-				? List.of("*")
-				: Arrays.stream(allowedOriginPatternsConfig.split(",")).map(String::trim).filter(s -> !s.isEmpty()).toList();
-		config.setAllowedOriginPatterns(patterns.isEmpty() ? List.of("*") : patterns);
-		config.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
-		config.setAllowedHeaders(List.of("*"));
-		config.setAllowCredentials(true);
-		config.setMaxAge(3600L);
+    @Bean
+    public AuthenticationProvider authenticationProvider() {
+        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
+        authProvider.setUserDetailsService((UserDetailsService) userService);
+        authProvider.setPasswordEncoder(passwordEncoder);
+        return authProvider;
+    }
 
-		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-		source.registerCorsConfiguration("/**", config);
-		return source;
-	}
-	
-	// Virtual threads executor for Spring Security chain and MVC
-	@Bean
-	public Executor applicationTaskExecutor() {
-		return java.util.concurrent.Executors.newVirtualThreadPerTaskExecutor();
-	}
-	
-	@Bean
-	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-		http
-			.cors(cors -> cors.configurationSource(corsConfigurationSource()))
-			.csrf(AbstractHttpConfigurer::disable)
-			.authorizeHttpRequests(auth -> auth
-				.requestMatchers("/api/auth/**").permitAll()
-				.requestMatchers("/v3/api-docs/**").permitAll()
-				.requestMatchers("/swagger-ui.html").permitAll()
-				.requestMatchers("/swagger-ui/**").permitAll()
-				.requestMatchers("/oauth2/**").permitAll()
-				.requestMatchers("/login/oauth2/**").permitAll()
-				.requestMatchers("/actuator/**").permitAll()
-				.anyRequest().authenticated()
-			)
-			.sessionManagement(session -> session
-				.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-			)
-			.authenticationProvider(authenticationProvider())
-			.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
-		
-		return http.build();
-	}
-	
-	@RequiredArgsConstructor
-	public static class JwtAuthenticationFilter extends OncePerRequestFilter {
-		private final IJwtService jwtService;
-		private final IUserService userService;
-		
-	@Override
-	protected void doFilterInternal(@NonNull HttpServletRequest request,
-									@NonNull HttpServletResponse response,
-									@NonNull FilterChain filterChain) throws ServletException, IOException {
-		final String requestURI = request.getRequestURI();
-		
-		// Skip JWT processing for registration and other public endpoints
-		if (requestURI.equals("/api/auth/register") || 
-			requestURI.equals("/api/auth/verify-email") ||
-			requestURI.equals("/api/auth/forgot-password") ||
-			requestURI.equals("/api/auth/reset-password") ||
-			requestURI.startsWith("/v3/api-docs") ||
-			requestURI.startsWith("/swagger-ui") ||
-			requestURI.equals("/swagger-ui.html") ||
-			requestURI.startsWith("/oauth2/") ||
-			requestURI.startsWith("/login/oauth2/")) {
-			filterChain.doFilter(request, response);
-			return;
-		}
-		
-		final String authHeader = request.getHeader("Authorization");
-		final String jwt;
-		final String userEmail;
-		
-		if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-			filterChain.doFilter(request, response);
-			return;
-		}
-			
-			jwt = authHeader.substring(7);
-			userEmail = jwtService.extractUsername(jwt);
-			
-			if (userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-				var userDetails = userService.loadUserByUsername(userEmail);
-				
-				if (jwtService.validateToken(jwt, userDetails)) {
-					var authToken = new org.springframework.security.authentication.UsernamePasswordAuthenticationToken(
-						userDetails, null, userDetails.getAuthorities());
-					authToken.setDetails(new org.springframework.security.web.authentication.WebAuthenticationDetailsSource().buildDetails(request));
-					SecurityContextHolder.getContext().setAuthentication(authToken);
-				}
-			}
-			
-			filterChain.doFilter(request, response);
-		}
-	}
+    @Bean
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
+        return config.getAuthenticationManager();
+    }
+
+    @Bean
+    public JwtAuthenticationFilter jwtAuthenticationFilter() {
+        return new JwtAuthenticationFilter(jwtService, userService);
+    }
+
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration config = new CorsConfiguration();
+        List<String> patterns = allowedOriginPatternsConfig == null || allowedOriginPatternsConfig.isBlank()
+                ? List.of("*")
+                : Arrays.stream(allowedOriginPatternsConfig.split(",")).map(String::trim).filter(s -> !s.isEmpty()).toList();
+        config.setAllowedOriginPatterns(patterns.isEmpty() ? List.of("*") : patterns);
+        config.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
+        config.setAllowedHeaders(List.of("*"));
+        config.setAllowCredentials(true);
+        config.setMaxAge(3600L);
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", config);
+        return source;
+    }
+
+    // Virtual threads executor for Spring Security chain and MVC
+    @Bean
+    public Executor applicationTaskExecutor() {
+        return java.util.concurrent.Executors.newVirtualThreadPerTaskExecutor();
+    }
+
+    @Bean
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        http
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+                .csrf(AbstractHttpConfigurer::disable)
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/api/auth/**").permitAll()
+                        .requestMatchers("/oauth2/**").permitAll()
+                        .requestMatchers("/login/oauth2/**").permitAll()
+                        .requestMatchers(
+                                "/swagger-ui.html",
+                                "/swagger-ui/**",
+                                "/v3/api-docs/**"
+//                        ).hasAnyRole("ADMIN", "DEVELOPER")
+                        ).permitAll()
+                        .anyRequest().authenticated()
+                )
+                .sessionManagement(session -> session
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                )
+                .authenticationProvider(authenticationProvider())
+                .addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
+
+        return http.build();
+    }
+
+    @RequiredArgsConstructor
+    public static class JwtAuthenticationFilter extends OncePerRequestFilter {
+        private final IJwtService jwtService;
+        private final IUserService userService;
+
+        @Override
+        protected void doFilterInternal(@NonNull HttpServletRequest request,
+                                        @NonNull HttpServletResponse response,
+                                        @NonNull FilterChain filterChain) throws ServletException, IOException {
+            final String requestURI = request.getRequestURI();
+
+            // Skip JWT processing for registration and other public endpoints
+            if (requestURI.equals("/api/auth/register") ||
+                    requestURI.equals("/api/auth/verify-email") ||
+                    requestURI.equals("/api/auth/forgot-password") ||
+                    requestURI.equals("/api/auth/reset-password") ||
+                    requestURI.startsWith("/v3/api-docs") ||
+                    requestURI.startsWith("/swagger-ui") ||
+                    requestURI.equals("/swagger-ui.html") ||
+                    requestURI.startsWith("/oauth2/") ||
+                    requestURI.startsWith("/login/oauth2/")) {
+                filterChain.doFilter(request, response);
+                return;
+            }
+
+            final String authHeader = request.getHeader("Authorization");
+            final String jwt;
+            final String userEmail;
+
+            if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+                filterChain.doFilter(request, response);
+                return;
+            }
+
+            jwt = authHeader.substring(7);
+            userEmail = jwtService.extractUsername(jwt);
+
+            if (userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+                var userDetails = userService.loadUserByUsername(userEmail);
+
+                if (jwtService.validateToken(jwt, userDetails)) {
+                    var authToken = new org.springframework.security.authentication.UsernamePasswordAuthenticationToken(
+                            userDetails, null, userDetails.getAuthorities());
+                    authToken.setDetails(new org.springframework.security.web.authentication.WebAuthenticationDetailsSource().buildDetails(request));
+                    SecurityContextHolder.getContext().setAuthentication(authToken);
+                }
+            }
+
+            filterChain.doFilter(request, response);
+        }
+    }
 }
