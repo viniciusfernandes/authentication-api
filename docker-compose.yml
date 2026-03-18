@@ -14,7 +14,7 @@ services:
       retries: 5
 
   authentication-api:
-    image: authentication-api
+    image: viniciussf/authentication-api:latest
     build:
       context: .
       dockerfile: Dockerfile
