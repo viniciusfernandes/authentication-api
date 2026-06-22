@@ -270,6 +270,7 @@ class RegisterUserResponseTest {
             assertNull(newResponse.id);
             assertNull(newResponse.email);
             assertNull(newResponse.fullName);
+            assertNull(newResponse.companyId);
             assertNull(newResponse.message);
         }
 
@@ -283,7 +284,7 @@ class RegisterUserResponseTest {
             String message = "Success";
 
             // When
-            RegisterUserResponse newResponse = new RegisterUserResponse(id, email, fullName, message);
+            RegisterUserResponse newResponse = new RegisterUserResponse(id, email, fullName, null, message);
 
             // Then
             assertNotNull(newResponse);

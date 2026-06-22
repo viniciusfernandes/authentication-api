@@ -18,5 +18,6 @@ public class LoginResponse {
     public Long id;
     public String email;
     public String fullName;
+    public Short companyId;
     public Set<Role> roles;
 }

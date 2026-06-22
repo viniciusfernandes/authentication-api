@@ -51,8 +51,7 @@ public class OAuth2Endpoint {
             String token = jwtService.generateToken(user);
             
             // Map to response
-            var response = loginMapper.toResponse(user, token);
-            
+            LoginResponse response = loginMapper.toResponse(user, token);
             return ResponseEntity.ok(ApiResponse.success(response));
             
         } catch (Exception e) {

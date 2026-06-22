@@ -58,3 +58,11 @@ databaseChangeLog:
                 KEY idx_tokens_token_type (token, type),
                 CONSTRAINT fk_tokens_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
               );
+
+  - changeSet:
+      id: vinicius-20250621-01
+      author: vinicius
+      changes:
+        - sql:
+            sql: |
+              ALTER TABLE users ADD COLUMN company_id SMALLINT NULL DEFAULT NULL;

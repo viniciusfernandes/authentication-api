@@ -29,4 +29,6 @@ public class RegisterUserRequest {
     
     @NotBlank(message = "Confirm password is required")
     public String confirmPassword;
+    
+    public Short companyId;
 }

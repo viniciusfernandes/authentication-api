@@ -12,5 +12,6 @@ public class RegisterUserResponse {
     public Long id;
     public String email;
     public String fullName;
+    public Short companyId;
     public String message;
 }

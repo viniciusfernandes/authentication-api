@@ -13,6 +13,7 @@ public class LoginMapper {
                 .id(user.id)
                 .email(user.email)
                 .fullName(user.fullName)
+                .companyId(user.companyId)
                 .roles(user.roles)
                 .build();
     }

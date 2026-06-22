@@ -64,6 +64,7 @@ public class JwtService implements IJwtService {
         Map<String, Object> claims = new HashMap<>();
         claims.put("userId", user.id);
         claims.put("email", user.email);
+        claims.put("companyId", user.companyId);
         claims.put("roles", user.roles);
         return createToken(claims, user.email);
     }

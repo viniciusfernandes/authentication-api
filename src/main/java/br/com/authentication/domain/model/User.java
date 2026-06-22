@@ -64,6 +64,9 @@ public class User implements UserDetails {
     @Column(name = "external_provider")
     public ExternalProvider externalProvider;
     
+    @Column(name = "company_id")
+    public Short companyId;
+    
     @ElementCollection(fetch = FetchType.EAGER)
     @Enumerated(EnumType.STRING)
     @CollectionTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"))

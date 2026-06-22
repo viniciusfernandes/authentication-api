@@ -1,15 +1,17 @@
 package br.com.authentication.usecase.user.create.endpoint;
 
+import br.com.authentication.service.IUserService;
 import br.com.authentication.usecase.user.create.contract.RegisterUserRequest;
 import br.com.authentication.usecase.user.create.contract.RegisterUserResponse;
 import br.com.authentication.usecase.user.create.mapping.UserMapper;
-import br.com.authentication.service.IUserService;
-import br.com.authentication.service.IEmailService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/auth")

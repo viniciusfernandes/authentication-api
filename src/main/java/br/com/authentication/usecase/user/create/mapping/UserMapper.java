@@ -13,6 +13,7 @@ public class UserMapper {
         user.email = request.email;
         user.password = request.password;
         user.fullName = request.fullName;
+        user.companyId = request.companyId;
         return user;
     }
     
@@ -21,6 +22,7 @@ public class UserMapper {
         response.id = user.id;
         response.email = user.email;
         response.fullName = user.fullName;
+        response.companyId = user.companyId;
         response.message = "User registered successfully. Please check your email for verification.";
         return response;
     }
