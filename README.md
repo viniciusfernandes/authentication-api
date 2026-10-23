@@ -18,7 +18,7 @@ A modern authentication and authorization web application built with Spring Boot
 - **Spring Boot 3.x**
 - **Spring Security** with JWT
 - **Spring Data JPA**
-- **MySQL** database
+- **PostgreSQL** database
 - **Gradle** build tool
 - **JUnit 5** + Mockito for testing
 
@@ -51,7 +51,7 @@ src/main/java/br/com/authentication/
 
 - Java 21
 - Gradle
-- MySQL 8.0+
+- PostgreSQL 16+
 - Docker 27.5.1
 - Docker Compose 2.29.2
 
@@ -82,7 +82,7 @@ newgrp docker
 
 ### Database Setup
 
-1. Create a MySQL database:
+1. Create a PostgreSQL database:
 ```sql
 CREATE DATABASE auth_db;
 ```
@@ -91,7 +91,7 @@ CREATE DATABASE auth_db;
 ```yaml
 spring:
   datasource:
-    url: jdbc:mysql://localhost:3306/auth_db?createDatabaseIfNotExist=true&useSSL=false&serverTimezone=UTC
+    url: jdbc:postgresql://localhost:5432/auth_db
     username: your_username
     password: your_password
 ```
@@ -124,7 +124,7 @@ The API will be available at `http://localhost:8080`
 
 ## Docker
 
-This project includes a Dockerfile and `docker-compose.yml` with three services: `authentication-api`, `mysql`, and a sample `authentication-app` frontend placeholder.
+This project includes a Dockerfile and `docker-compose.yml` with three services: `authentication-api`, `postgres`, and a sample `authentication-app` frontend placeholder.
 
 ### Build and run with Docker Compose
 
@@ -134,7 +134,7 @@ docker compose up --build
 
 - Backend: `http://localhost:8080`
 - Frontend placeholder (Vite dev server): `http://localhost:3000`
-- MySQL: port `3306` with database `auth_db` (user: `root` / pass: `root`)
+- PostgreSQL: database `auth_db` (user: `postgres` / pass: `postgres`; not published on the host, reachable as `postgres:5432` inside the compose network)
 
 Spring profile `docker` is activated automatically by the container via `SPRING_PROFILES_ACTIVE=docker`.
 
