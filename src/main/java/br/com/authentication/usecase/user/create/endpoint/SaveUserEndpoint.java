@@ -27,27 +27,19 @@ public class SaveUserEndpoint {
                     .body(ApiResponse.error("Passwords do not match"));
         }
         
-        try {
-            // Create user
-            var user = userService.createUser(
-                    request.email,
-                    request.password,
-                    request.fullName
-            );
-            
-            // Map to response
-            var response = userMapper.toResponse(user);
-            
-            return ResponseEntity.status(HttpStatus.CREATED)
-                    .body(ApiResponse.success(response));
-                    
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(HttpStatus.CONFLICT)
-                    .body(ApiResponse.error(e.getMessage()));
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(ApiResponse.error(e.getMessage()));
-        }
+        // Errors (duplicated email 409, unknown claim 404, invalid claim value 400) are
+        // translated by GlobalExceptionHandler.
+        var user = userService.createUser(
+                request.email,
+                request.password,
+                request.fullName,
+                userMapper.toClaimAssignments(request.claims)
+        );
+
+        var response = userMapper.toResponse(user);
+
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(ApiResponse.success(response));
     }
     
     // Inner class for API response structure

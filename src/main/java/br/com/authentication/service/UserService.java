@@ -1,7 +1,11 @@
 package br.com.authentication.service;
 
+import br.com.authentication.domain.exception.ConflictException;
+import br.com.authentication.domain.exception.NotFoundException;
+import br.com.authentication.domain.model.Claim;
 import br.com.authentication.domain.model.User;
 import br.com.authentication.domain.model.UserStatus;
+import br.com.authentication.domain.repository.ClaimRepository;
 import br.com.authentication.domain.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -12,7 +16,13 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.beans.factory.annotation.Value;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -20,6 +30,7 @@ import java.util.UUID;
 public class UserService implements IUserService {
     
     private final UserRepository userRepository;
+    private final ClaimRepository claimRepository;
     private final PasswordEncoder passwordEncoder;
     private final IEmailService emailService;
 
@@ -33,17 +44,19 @@ public class UserService implements IUserService {
                 .orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + email));
     }
     
-    public User createUser(String email, String password, String fullName) {
+    public User createUser(String email, String password, String fullName, List<ClaimAssignment> claims) {
         if (userRepository.existsByEmail(email)) {
-            throw new IllegalArgumentException("User with email " + email + " already exists");
+            throw new ConflictException("User with email " + email + " already exists");
         }
+
+        // Validate the claims before anything is sent or saved.
+        Map<Claim, String> resolvedClaims = resolveClaims(claims);
         
         String hashedPassword = passwordEncoder.encode(password);
         User.UserBuilder userBuilder = User.builder()
                 .email(email)
                 .password(hashedPassword)
-                .fullName(fullName)
-                .roles(java.util.Set.of(br.com.authentication.domain.model.Role.USER));
+                .fullName(fullName);
 
         if (emailVerificationEnabled) {
             String verificationToken = UUID.randomUUID().toString();
@@ -58,7 +71,7 @@ public class UserService implements IUserService {
             User user = userBuilder.build();
             // Send email verification before saving to ensure rollback works
             emailService.sendEmailVerification(user);
-            return userRepository.save(user);
+            return saveWithClaims(user, resolvedClaims);
         }
 
         User user = userBuilder
@@ -68,7 +81,59 @@ public class UserService implements IUserService {
                 .emailVerificationTokenExpiry(null)
                 .build();
         
+        return saveWithClaims(user, resolvedClaims);
+    }
+
+    public User updateUser(Long userId, String fullName, String phone, String profilePicture,
+                           List<ClaimAssignment> claims) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundException("User not found with id: " + userId));
+
+        // claims == null keeps the current claims; an empty list removes all of them.
+        Map<Claim, String> resolvedClaims = claims == null ? null : resolveClaims(claims);
+
+        user.fullName = fullName;
+        user.phone = phone;
+        user.profilePicture = profilePicture;
+
+        if (resolvedClaims != null) {
+            user.retainClaims(resolvedClaims.keySet().stream().map(claim -> claim.id).collect(Collectors.toSet()));
+            resolvedClaims.forEach(user::addClaim);
+        }
+
         return userRepository.save(user);
+    }
+
+    // The user must exist (have an id) before its UserClaim rows, so it is saved first.
+    private User saveWithClaims(User user, Map<Claim, String> resolvedClaims) {
+        User saved = userRepository.save(user);
+        if (!resolvedClaims.isEmpty()) {
+            resolvedClaims.forEach(saved::addClaim);
+            saved = userRepository.save(saved);
+        }
+        return saved;
+    }
+
+    /** Loads the claims by id and validates each value against the claim type. */
+    private Map<Claim, String> resolveClaims(List<ClaimAssignment> assignments) {
+        Map<Claim, String> resolved = new LinkedHashMap<>();
+        if (assignments == null) {
+            return resolved;
+        }
+
+        Set<Long> seenIds = new HashSet<>();
+        for (ClaimAssignment assignment : assignments) {
+            if (!seenIds.add(assignment.claimId())) {
+                throw new IllegalArgumentException("Claim " + assignment.claimId() + " was informed more than once");
+            }
+
+            Claim claim = claimRepository.findById(assignment.claimId())
+                    .orElseThrow(() -> new NotFoundException("Claim not found with id: " + assignment.claimId()));
+
+            claim.valueType.parse(assignment.value()); // throws IllegalArgumentException when invalid
+            resolved.put(claim, assignment.value().trim());
+        }
+        return resolved;
     }
     
     public User createUserFromExternalProvider(String email, String fullName, 
@@ -86,7 +151,6 @@ public class UserService implements IUserService {
                 .emailVerified(true)
                 .externalProviderId(externalProviderId)
                 .externalProvider(externalProvider)
-                .roles(java.util.Set.of(br.com.authentication.domain.model.Role.USER))
                 .build();
         
         return userRepository.save(user);

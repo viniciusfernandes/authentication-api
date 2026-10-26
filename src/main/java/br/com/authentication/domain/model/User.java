@@ -6,11 +6,12 @@ import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDateTime;
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -64,11 +65,10 @@ public class User implements UserDetails {
     @Column(name = "external_provider")
     public ExternalProvider externalProvider;
     
-    @ElementCollection(fetch = FetchType.EAGER)
-    @Enumerated(EnumType.STRING)
-    @CollectionTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"))
-    @Column(name = "role")
-    public Set<Role> roles;
+    // Extra claims written into the JWT (N-N with the claim catalog, value kept per user).
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    @Builder.Default
+    public Set<UserClaim> claims = new HashSet<>();
     
     @Column(name = "created_at", nullable = false, updatable = false)
     public LocalDateTime createdAt;
@@ -80,9 +80,6 @@ public class User implements UserDetails {
     protected void onCreate() {
         createdAt = LocalDateTime.now();
         updatedAt = LocalDateTime.now();
-        if (roles == null || roles.isEmpty()) {
-            roles = Set.of(Role.USER);
-        }
     }
     
     @PreUpdate
@@ -93,9 +90,8 @@ public class User implements UserDetails {
     // UserDetails implementation
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return roles.stream()
-                .map(role -> new SimpleGrantedAuthority("ROLE_" + role.name()))
-                .toList();
+        // No roles/authorities in this phase of the project: access is decided only by authentication.
+        return List.of();
     }
     
     @Override
@@ -167,6 +163,27 @@ public class User implements UserDetails {
         this.emailVerificationTokenExpiry = null;
     }
     
+    /** Sets (or replaces) the value of a claim for this user. */
+    public void addClaim(Claim claim, String value) {
+        // Updates in place when the user already has the claim (avoids delete + insert of the same key).
+        for (UserClaim userClaim : claims) {
+            if (userClaim.claim.id.equals(claim.id)) {
+                userClaim.value = value;
+                return;
+            }
+        }
+        claims.add(new UserClaim(this, claim, value));
+    }
+
+    /** Removes every claim of the user whose id is not in {@code claimIdsToKeep}. */
+    public void retainClaims(Set<Long> claimIdsToKeep) {
+        claims.removeIf(userClaim -> !claimIdsToKeep.contains(userClaim.claim.id));
+    }
+
+    public void removeClaim(Claim claim) {
+        claims.removeIf(userClaim -> userClaim.claim.id.equals(claim.id));
+    }
+
     public void clearPasswordResetToken() {
         this.passwordResetToken = null;
         this.passwordResetTokenExpiry = null;

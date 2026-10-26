@@ -3,13 +3,13 @@ services:
     image: postgres:16-alpine
     container_name: authentication-postgres
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: auth_db
+      POSTGRES_USER: authenticator
+      POSTGRES_PASSWORD: admin
+      POSTGRES_DB: auth
     volumes:
       - app_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres -d auth_db"]
+      test: ["CMD-SHELL", "pg_isready -U authenticator -d auth"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -25,9 +25,9 @@ services:
         condition: service_healthy
     environment:
       SPRING_PROFILES_ACTIVE: docker
-      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/auth_db
-      SPRING_DATASOURCE_USERNAME: postgres
-      SPRING_DATASOURCE_PASSWORD: postgres
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/auth
+      SPRING_DATASOURCE_USERNAME: authenticator
+      SPRING_DATASOURCE_PASSWORD: admin
       JWT_SECRET: change-me-in-prod
       MAIL_USERNAME: ""
       MAIL_PASSWORD: ""

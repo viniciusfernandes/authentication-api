@@ -1,6 +1,7 @@
 package br.com.authentication.service;
 
 import br.com.authentication.domain.model.User;
+import br.com.authentication.domain.model.UserClaim;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -25,7 +26,6 @@ public class JwtService implements IJwtService {
     
     @Value("${jwt.expiration}")
     private Long expiration;
-    
     private SecretKey getSigningKey() {
         return Keys.hmacShaKeyFor(secret.getBytes());
     }
@@ -56,15 +56,27 @@ public class JwtService implements IJwtService {
     }
     
     public String generateToken(UserDetails userDetails) {
+        // Our principals are always User: delegate so the token also carries the user's claims.
+        if (userDetails instanceof User user) {
+            return generateToken(user);
+        }
         Map<String, Object> claims = new HashMap<>();
         return createToken(claims, userDetails.getUsername());
     }
     
     public String generateToken(User user) {
         Map<String, Object> claims = new HashMap<>();
+
+        // Per-user claims from the claims tables (e.g. companyId). Written first so that
+        // they can never override the standard claims below.
+        if (user.claims != null) {
+            for (UserClaim userClaim : user.claims) {
+                claims.put(userClaim.claim.name, userClaim.claim.valueType.parse(userClaim.value));
+            }
+        }
+
         claims.put("userId", user.id);
         claims.put("email", user.email);
-        claims.put("roles", user.roles);
         return createToken(claims, user.email);
     }
     

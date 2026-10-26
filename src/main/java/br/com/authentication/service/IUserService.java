@@ -4,9 +4,15 @@ import br.com.authentication.domain.model.User;
 import br.com.authentication.domain.model.ExternalProvider;
 import org.springframework.security.core.userdetails.UserDetailsService;
 
+import java.util.List;
+
 public interface IUserService extends UserDetailsService {
     
-    User createUser(String email, String password, String fullName);
+    User createUser(String email, String password, String fullName, List<ClaimAssignment> claims);
+
+    /** Updates the user data; {@code claims == null} keeps the current claims, otherwise they are replaced. */
+    User updateUser(Long userId, String fullName, String phone, String profilePicture,
+                    List<ClaimAssignment> claims);
     
     User createUserFromExternalProvider(String email, String fullName, 
                                       String externalProviderId, 

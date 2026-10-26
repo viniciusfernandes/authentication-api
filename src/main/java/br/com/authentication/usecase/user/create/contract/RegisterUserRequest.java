@@ -1,5 +1,6 @@
 package br.com.authentication.usecase.user.create.contract;
 
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
@@ -7,6 +8,8 @@ import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
+
+import java.util.List;
 
 @Builder
 @NoArgsConstructor
@@ -29,4 +32,8 @@ public class RegisterUserRequest {
     
     @NotBlank(message = "Confirm password is required")
     public String confirmPassword;
+
+    // Optional: claims (id + value) that must be written into the user's token.
+    @Valid
+    public List<UserClaimRequest> claims;
 }

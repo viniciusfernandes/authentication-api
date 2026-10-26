@@ -84,14 +84,15 @@ newgrp docker
 
 1. Create a PostgreSQL database:
 ```sql
-CREATE DATABASE auth_db;
+CREATE ROLE authenticator WITH LOGIN PASSWORD 'admin';
+CREATE DATABASE auth OWNER authenticator;
 ```
 
 2. Update `application.yml` with your database credentials:
 ```yaml
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/auth_db
+    url: jdbc:postgresql://localhost:5432/auth
     username: your_username
     password: your_password
 ```
@@ -134,7 +135,7 @@ docker compose up --build
 
 - Backend: `http://localhost:8080`
 - Frontend placeholder (Vite dev server): `http://localhost:3000`
-- PostgreSQL: database `auth_db` (user: `postgres` / pass: `postgres`; not published on the host, reachable as `postgres:5432` inside the compose network)
+- PostgreSQL: database `auth` (user: `authenticator` / pass: `admin`; not published on the host, reachable as `postgres:5432` inside the compose network)
 
 Spring profile `docker` is activated automatically by the container via `SPRING_PROFILES_ACTIVE=docker`.
 

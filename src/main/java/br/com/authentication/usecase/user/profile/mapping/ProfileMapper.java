@@ -14,7 +14,6 @@ public class ProfileMapper {
                 .fullName(user.fullName)
                 .phone(user.phone)
                 .profilePicture(user.profilePicture)
-                .roles(user.roles)
                 .emailVerified(user.emailVerified)
                 .createdAt(user.createdAt)
                 .build();
